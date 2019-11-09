@@ -49,9 +49,9 @@ final class Services {
     
     static let root = Services()
     
-    private typealias ServiceBuilder = () -> Any
+    private typealias AnyServiceBuilder = () -> Any
     
-    private var builders = [String: ServiceBuilder]()
+    private var builders = [ServiceIdentifier: AnyServiceBuilder]()
     
     func register<T>(_ serviceBuilder: @escaping () -> T) {
         
@@ -59,7 +59,7 @@ final class Services {
             FatalInjectable.serviceNotProtocol(T.self)
         }
         
-        builders[key(for: T.self)] = serviceBuilder
+        builders[identifier(for: T.self)] = serviceBuilder
     }
     
     func retrieve<T>() -> T {
@@ -68,7 +68,7 @@ final class Services {
             FatalInjectable.serviceNotProtocol(T.self)
         }
         
-        let serviceBuilder = builders[key(for: T.self)]
+        let serviceBuilder = builders[identifier(for: T.self)]
         let extractedService = serviceBuilder?() as? T
         
         guard let service = extractedService else {

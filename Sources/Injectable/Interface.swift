@@ -33,7 +33,7 @@ import Foundation
 public protocol InjectableService { }
 
 @propertyWrapper
-public struct Inject<T> {
+public struct Injected<T> {
     
     public var wrappedValue: T {
         InjectableServices.retrieve()
@@ -42,9 +42,11 @@ public struct Inject<T> {
     public init() {}
 }
 
+public typealias ServiceBuilder<Service> = () -> Service
+
 public struct InjectableServices {
     
-    public static func register<T>(_ builder: @autoclosure @escaping () -> T) {
+    public static func register<T>(service: T.Type, _ builder: @autoclosure @escaping ServiceBuilder<T>) {
         Services.root.register(builder)
     }
     

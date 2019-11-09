@@ -26,8 +26,10 @@
 
 import Foundation
 
-func key<T>(for: T.Type) -> String {
-    return String(describing: T.self)
+typealias ServiceIdentifier = ObjectIdentifier
+
+func identifier<T>(for: T.Type) -> ServiceIdentifier {
+    ServiceIdentifier(T.self)
 }
 
 func isProtocol<T>(type protocolType: T.Type) -> Bool {
