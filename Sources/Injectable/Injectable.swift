@@ -82,7 +82,7 @@ final class Services {
     func getService<T>(_ serviceType: T.Type) -> T? {
         
         guard
-            let anyService = serviceStorage[identifier(for: T.self)]
+            let anyService = serviceStorage[identifier(for: T.self)],
             let storedService = anyService as? T
             else { return nil }
         
