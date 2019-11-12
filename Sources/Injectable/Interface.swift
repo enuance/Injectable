@@ -35,11 +35,20 @@ public protocol InjectableService { }
 @propertyWrapper
 public struct Injected<T> {
     
-    public var wrappedValue: T {
-        InjectableServices.retrieve()
-    }
+    public var wrappedValue: T { InjectableServices.retrieve() }
     
     public init() {}
+}
+
+@propertyWrapper
+public struct InjectedHere<T> {
+    
+    private lazy var service: T = { InjectableServices.retrieve() }()
+    
+    public var wrappedValue: T { service }
+    
+    public init() {}
+    
 }
 
 public typealias ServiceBuilder<Service> = () -> Service
