@@ -52,6 +52,7 @@ final class Services {
     private typealias AnyServiceBuilder = () -> Any
     
     private var builders = [ServiceIdentifier: AnyServiceBuilder]()
+    private var serviceStorage = [ServiceIdentifier: Any]()
     
     func register<T>(_ serviceBuilder: @escaping () -> T) {
         
@@ -62,7 +63,7 @@ final class Services {
         builders[identifier(for: T.self)] = serviceBuilder
     }
     
-    func retrieve<T>() -> T {
+    func resolve<T>() -> T {
         
         guard isProtocol(type: T.self) else {
             FatalInjectable.serviceNotProtocol(T.self)
@@ -76,6 +77,24 @@ final class Services {
         }
         
         return service
+    }
+    
+    func getService<T>(_ serviceType: T.Type) -> T? {
+        
+        guard
+            let anyService = serviceStorage[identifier(for: T.self)]
+            let storedService = anyService as? T
+            else { return nil }
+        
+        return storedService
+    }
+    
+    func storeService<T>(_ service: T) {
+        serviceStorage[identifier(for: T.self)] = service
+    }
+    
+    func removeService<T>(_ serviceType: T.Type) {
+        serviceStorage[identifier(for: T.self)] = nil
     }
     
 }

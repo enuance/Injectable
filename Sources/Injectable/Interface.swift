@@ -35,17 +35,15 @@ public protocol InjectableService { }
 @propertyWrapper
 public struct Injected<T> {
     
-    public var wrappedValue: T { InjectableServices.retrieve() }
+    public var wrappedValue: T { InjectableServices.resolve() }
     
     public init() {}
 }
 
 @propertyWrapper
-public struct InjectedHere<T> {
+public struct ScopedInjection<T> {
     
-    private lazy var service: T = { InjectableServices.retrieve() }()
-    
-    public var wrappedValue: T { mutating get { service } }
+    public var wrappedValue: T { InjectableServices.storedResolve() }
     
     public init() {}
     
@@ -59,8 +57,29 @@ public struct InjectableServices {
         Services.root.register(builder)
     }
     
-    public static func retrieve<T>() -> T {
-        Services.root.retrieve()
+    public static func resolve<T>() -> T {
+        Services.root.resolve()
     }
+    
+    public static func storedResolve<T>() -> T {
+        guard let storedService = Services.root.getService(T.self) else {
+            let resolvedService: T = Services.root.resolve()
+            Services.root.storeService(resolvedService)
+            return resolvedService
+        }
+        return storedService
+    }
+    
+    public static func token<T>(for serviceType: T.Type) -> InjectableToken<T> {
+        InjectableToken<T>()
+    }
+    
+}
+
+public final class InjectableToken<T> {
+    
+    public func removeService() { Services.root.removeService(T.self) }
+    
+    deinit { removeService() }
     
 }
