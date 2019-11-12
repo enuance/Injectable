@@ -45,7 +45,7 @@ public struct InjectedHere<T> {
     
     private lazy var service: T = { InjectableServices.retrieve() }()
     
-    public var wrappedValue: T { service }
+    public var wrappedValue: T { mutating get { service } }
     
     public init() {}
     
